@@ -1,8 +1,10 @@
 <script>
   import Task from './Task.svelte';
   import { TasksCollection } from '../api/TasksCollection';
+  import TaskForm from './TaskForm.svelte';
 
-  $m: tasks = TasksCollection.find({}).fetch()
+  $m: tasks = TasksCollection.find({}, { sort: { createdAt: -1 } }).fetch()
+
 </script>
 
 <div class="container">
@@ -10,24 +12,10 @@
       <h1>Todo List</h1>
   </header>
 
+  <TaskForm/>
   <ul>
       {#each tasks as task (task._id)}
           <Task task={task} />
       {/each}
   </ul>
 </div>
-<!-- 
-<div class="container">
-  <h1>Welcome to Meteor!</h1>
-
-  <button on:click={addToCounter}>Click Me</button>
-  <p>You've pressed the button {counter} times.</p>
-
-  <h2>Learn Meteor!</h2>
-  <ul>
-    <li><a href="https://svelte-tutorial.meteor.com/" target="_blank">Do the Tutorial</a></li>
-    <li><a href="http://guide.meteor.com" target="_blank">Follow the Guide</a></li>
-    <li><a href="https://docs.meteor.com" target="_blank">Read the Docs</a></li>
-    <li><a href="https://forums.meteor.com" target="_blank">Discussions</a></li>
-  </ul>
-</div> -->
