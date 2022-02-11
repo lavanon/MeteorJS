@@ -1,16 +1,12 @@
 <script>
-    import { TasksCollection } from '../api/TasksCollection';
 
     let newTask = '';
-    export let user = null;
-    
+
     const handleSubmit = () => {
-        // Insert a task into the collection
-        TasksCollection.insert({
-            text: newTask,
-            createdAt: new Date(), // current time
-            userId: user._id,
-        });
+        if (!newTask) return;
+
+        Meteor.call('tasks.insert', newTask);
+
         // Clear form
         newTask = '';
     }
