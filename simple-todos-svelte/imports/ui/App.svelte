@@ -12,26 +12,32 @@
   let pendingTasksTitle = '';
   let tasks = [];
   let user = null;
-  $m: {
+  let isLoading = true;
+  const handler = Meteor.subscribe('tasks');
+
+    $m: {
         user = Meteor.user();
 
-        const userFilter = user ? { userId: user._id } : {};
-        const pendingOnlyFilter = { ...hideCompletedFilter, ...userFilter };
+        if (user) {
 
-        tasks = user
-                ? TasksCollection.find(
-                        hideCompleted ? pendingOnlyFilter : userFilter,
-                        { sort: { createdAt: -1 } }
-                ).fetch()
-                : [];
+            isLoading = !handler.ready();
 
-        incompleteCount = user
-                ? TasksCollection.find(pendingOnlyFilter).count()
-                : 0;
-      pendingTasksTitle = `${
-              incompleteCount ? ` (${incompleteCount})` : ''
-      }`;
-  }
+            const userFilter = { userId: user._id };
+            const pendingOnlyFilter = { ...hideCompletedFilter, ...userFilter };
+
+
+            tasks = TasksCollection.find(
+                    hideCompleted ? pendingOnlyFilter : userFilter,
+                    { sort: { createdAt: -1 } }
+            ).fetch();
+
+            incompleteCount = TasksCollection.find(pendingOnlyFilter).count();
+
+            pendingTasksTitle = `${
+                    incompleteCount ? ` (${incompleteCount})` : ''
+            }`;
+        }
+    }
   const setHideCompleted = value =>  {
     hideCompleted = value;
   }
@@ -58,6 +64,11 @@
               {hideCompleted ? 'Show All' : 'Hide Completed'}
               </button>
           </div>
+
+                 
+          {#if isLoading}
+              <div class="loading">loading...</div>
+          {/if}
           <ul class="tasks">
               {#each tasks as task (task._id)}
                   <Task task={task} />
